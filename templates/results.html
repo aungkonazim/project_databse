@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Results</title>
+</head>
+<body>
+    <h4>This is the table of best restaurants according to the average of all types of rating as given in reviews</h4>
+    <div>
+        <table border = 1 >
+            <thead>
+            <tr>
+                <th> Name of Restaurant</th>
+                <th> Address </th>
+                <th> Rating </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows2 %}
+
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <h4>This is the table of coupons "Azim" has for different restaurants</h4>
+    <div>
+        <table border = 1 >
+        <thead>
+        <tr>
+            <th> Restaurant Name</th>
+            <th> Address </th>
+            <th> Discount </th>
+            <th> Valid Date</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in rows %}
+
+        <tr>
+            <td>{{ row[0] }}</td>
+            <td>{{ row[1] }}</td>
+            <td>{{ row[2] }} </td>
+            <td>{{ row[3] }} </td>
+        </tr>
+        {% endfor %}
+        </tbody>
+        </table>
+    </div>
+
+
+    <h4>This is the table of cuisines "Azim" likes and the restaurants they are available in</h4>
+    <div>
+        <table border = 1 >
+            <thead>
+            <tr>
+                <th> Cuisine</th>
+                <th> Restaurant </th>
+                <th> Address </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows1 %}
+
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <h4>This is the table of restaurants who give the best value for money as determined by average price rating </h4>
+    <div>
+        <table border = 1 >
+            <thead>
+            <tr>
+                <th> Restaurant name</th>
+                <th> Address </th>
+                <th> Average Price Rating </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for row in rows3 %}
+
+            <tr>
+                <td>{{ row[0] }}</td>
+                <td>{{ row[1] }}</td>
+                <td>{{ row[2] }}</td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</body>
+<!--<style>-->
+    <!--table,th,td{-->
+    <!--border: 1px solid black;-->
+<!--}-->
+<!--</style>-->
+</html>
