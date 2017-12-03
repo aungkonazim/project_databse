@@ -1,0 +1,133 @@
+
+create extension citext;
+
+create table restaurant(
+id serial primary key,
+name char(50) not null,
+address char(50) not null,
+branch_no int not null,
+type citext not null,
+unique(name,address,branch_no),
+constraint type check(type in ('Ethnic','Fast Food','Fast Casual','Casual Dining','Family Style','Fine Dining'))
+);
+
+create table person(
+	id serial primary key,
+	email_id citext not null,
+	name char(20) not null,
+	dob date not null,
+	address char(50) not null,
+	trustrating int not null,
+	unique(email_id),
+	constraint trustrating check(trustrating>0 and trustrating <6)	
+);
+
+  
+create table review(
+	id serial primary key,
+	ambiance_score int not null,
+	foodquality_score int not null,
+	service_score int not null,
+	price_score int not null,
+	experience_score int not null,
+	text char(100),
+	person_id int references person(id),
+	restaurant_id int references restaurant(id),	
+	unique(person_id,restaurant_id),
+	constraint ambiance_score check(ambiance_score>0 and ambiance_score<6),
+	constraint foodquality_score check(foodquality_score>0 and foodquality_score<6),	
+	constraint service_score check(service_score>0 and service_score<6),
+	constraint price_score check(price_score>0 and price_score<6),
+	constraint experience_score check(experience_score>0 and experience_score<6)
+);
+
+create table follow(
+	follower_id int references person(id),
+	followed_id int references person(id),
+	CONSTRAINT follow_pkey PRIMARY KEY (followed_id,follower_id)
+);
+
+create table cuisine(
+	id serial primary key,
+	name text not null
+);
+
+create table has_cuisines(
+	restaurant_id int references restaurant(id),
+	cuisine_id int references cuisine(id),
+	CONSTRAINT has_cuisines_pkey PRIMARY KEY (restaurant_id,cuisine_id)
+);
+
+create table like_cuisines(
+	cuisine_id int references cuisine(id),
+	person_id int references person(id),
+	CONSTRAINT like_cuisines_pkey PRIMARY KEY (person_id,cuisine_id)
+);
+
+create table coupon(
+	id serial primary key,
+	restaurant_id int references restaurant(id),
+	discount float not null,
+	valid date not null,
+	coupon_code text not null,
+	constraint discount check(discount>0 and discount<=100)
+);
+
+
+create table owns_coupon(
+	coupon_id int references coupon(id),
+	person_id int references person(id),
+	CONSTRAINT owns_coupon_pkey PRIMARY KEY (person_id,coupon_id)
+);
+
+insert into restaurant(name,address,branch_no,type) values
+	('Wangs','Highland',1,'Ethnic');
+insert into restaurant(name,address,branch_no,type) values
+	('Wangs','Highland',2,'Ethnic');
+insert into restaurant(name,address,branch_no,type) values
+	('Mulan','Poplar',1,'fine dining');
+insert into restaurant(name,address,branch_no,type) values
+	('ATEN','Poplar',1,'fine dining');
+	
+insert into person(email_id,name,dob,address,trustrating) values
+	('aungkonazim@gmail.com','A','1991-08-30','3467 southern ave',5);
+insert into person(email_id,name,dob,address,trustrating) values
+	('mullah@memphis.edu','B','1991-08-30','3467 southern ave',4);
+	
+insert into review(ambiance_score,foodquality_score,service_score,price_score,experience_score,text,person_id,restaurant_id) values
+	(2,2,2,2,2,'This is good',1,3),(2,2,2,2,2,'This is enough',2,4),(1,1,1,1,1,'This is ok',2,1),(5,5,5,5,5,'This is very good',2,2),
+	(1,2,3,4,5,'Good',1,1),(2,4,1,1,1,'Sufficient',1,2);
+	
+insert into follow(follower_id,followed_id) values
+	(1,2),(2,1);
+	
+insert into cuisine(name) values 
+	('Asian'),('Chinese'),('Indian'),('Continental');
+	
+insert into has_cuisines(restaurant_id,cuisine_id) values
+	(1,2),(2,2),(3,2),(4,1),(1,4);
+	
+insert into like_cuisines(cuisine_id,person_id) values
+	(1,1),(2,2);
+	
+insert into coupon(restaurant_id,discount,valid,coupon_code) values
+	(1,15.56,'2018-01-01','AB'),(2,15.56,'2018-01-01','CD'),(3,50.56,'2018-01-01','EF');
+
+
+insert into owns_coupon(person_id,coupon_id) values
+	(1,1),(1,3),(2,3),(2,2);
+
+
+select restaurant.name as restaurant_name,coupon.discount::int,coupon.valid from person inner join owns_coupon on owns_coupon.person_id = person.id 
+	inner join coupon on coupon.id = owns_coupon.coupon_id inner join restaurant on coupon.restaurant_id=restaurant.id where person.name= 'A' and coupon.valid > now(); 
+	
+select cuisine.name as name_of_cuisine,restaurant.name as restaurant_name,restaurant.address from like_cuisines inner join person on person.id=like_cuisines.person_id inner join 
+	cuisine on cuisine.id=like_cuisines.cuisine_id inner join has_cuisines on has_cuisines.cuisine_id = cuisine.id inner join restaurant on
+	has_cuisines.restaurant_id = restaurant.id where person.name='A';
+
+select restaurant.name,restaurant.address,(avg(review.ambiance_score)+avg(review.price_score)+avg(review.foodquality_score)+avg(review.service_score)+avg(review.experience_score))/5 as avg_score from 
+	restaurant inner join review on review.restaurant_id = restaurant.id group by restaurant.id order by avg_score desc; 
+
+select restaurant.name,restaurant.address,avg(review.price_score) as price_rating from restaurant inner join review on review.restaurant_id = restaurant.id 
+group by restaurant.id order by price_rating desc limit 1;
+	
