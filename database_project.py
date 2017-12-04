@@ -33,6 +33,13 @@ def query():
     group by restaurant.id order by price_rating desc limit 1""")
     result4 = cursor.fetchall()
     return render_template("results.html",rows=result1,rows1 = result2,rows2=result3,rows3 = result4)
-
+@app.route("/result1", methods=["POST"])
+def query1():
+    k = request.form['projectFilepath']
+    cursor = conn.cursor()
+    val = str(k)
+    cursor.execute(val)
+    result = cursor.fetchall()
+    return render_template("index1.html",row = result)
 if __name__ == "__main__":
     app.run(port=4555, debug=True)

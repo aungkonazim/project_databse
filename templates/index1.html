@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Query</title>
+</head>
+<body>
+<h4>This is the result of your query </h4>
+<div>
+    <table border = 1 >
+
+        <tbody>
+        {% for row1 in row %}
+
+        <tr>
+            {% for row2 in row1 %}
+            <td>{{ row2 }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+</body>
+</html>
